@@ -10,6 +10,54 @@ const Bookings = () => {
 
 
 
+  useEffect(() => {
+    const fetchbookingDetails = async () => {
+      try {
+        console.log(userEmail)
+        // Fetch user details from the 'ProfileDetails' table based on the user's email
+        const { data, error } = await supabase
+          .from('TicketDetails')
+          .select('*')
+          .eq('email', userEmail);
+
+        if (error) {
+          console.error('Error fetching user details:', error.message);
+        } else {
+          setbookingDetails(data);
+        }
+      } catch (error) {
+        console.error('Error during user details fetching:', error.message);
+      }
+    };
+
+    fetchbookingDetails();
+  }, [userEmail]);
+
+
+
+  const handleCancelTicket = async (ticketId) => {
+    try {
+      // Delete the ticket with the specified ticketId
+      const { data, error } = await supabase
+        .from('TicketDetails')
+        .delete()
+        .eq('tid', ticketId);
+
+      if (error) {
+        console.error('Error canceling ticket:', error.message);
+      } else {
+        // Update the state to reflect the changes
+          setbookingDetails((prevBookingDetails) =>
+          prevBookingDetails.filter((booking) => booking.tid !== ticketId)
+        );
+        window.alert('Ticket canceled successfully!');
+      }
+    } catch (error) {
+      console.error('Error during ticket cancellation:', error.message);
+    }
+  };
+
+
 
   return (
     <div className='bg-sky-100 min-h-screen'>
